@@ -14,13 +14,9 @@ const Administrador = () => {
             Gestiona el catálogo de servicios disponibles.
           </p>
         </div>
-        <Link
-          className="bg-blue-600 hover:bg-blue-500 text-white px-5 py-2.5 rounded-xl font-bold transition-all shadow-lg shadow-blue-900/20 active:scale-95 flex items-center gap-2"
-          to={""}
-        >
-          <i className="bi bi-plus-lg"></i>
-          Crear Servicio
-        </Link>
+        <a className="bg-blue-600 hover:bg-blue-500 text-white px-5 py-2.5 rounded-xl font-bold transition-all shadow-lg shadow-blue-900/20 active:scale-95 flex items-center gap-2">
+         Crear Servicio
+        </a>
       </div>
 
       {/* Contenedor de la Tabla con Scroll Horizontal para móviles */}
