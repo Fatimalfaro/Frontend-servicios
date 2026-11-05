@@ -1,13 +1,43 @@
 import type { Servicio } from "../../interfaces/Servicios";
 import { Link } from "react-router";
+import { useAppContext } from "../../context/AppContext";
+import Swal from "sweetalert2";
+import { LuTrash2, LuPencil } from "react-icons/lu";
 
 interface ItemTablaProps {
   servicio: Servicio;
   fila: number;
 }
 
-const ItemTabla = ({servicio, fila}: ItemTablaProps) => {
- 
+const ItemTabla = ({ servicio, fila }: ItemTablaProps) => {
+  const { borrarServicio } = useAppContext();
+
+  const eliminarServicio = () => {
+    Swal.fire({
+      title: "¿Estás seguro?",
+      text: "No se puede revertir este proceso",
+      icon: "warning",
+      background: "#18181b", // zinc-900
+      color: "#f4f4f5", // zinc-100
+      showCancelButton: true,
+      confirmButtonColor: "#3b82f6", // blue-500
+      cancelButtonColor: "#ef4444", // red-500
+      confirmButtonText: "Sí, borrar",
+      cancelButtonText: "Cancelar",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        borrarServicio(servicio.id);
+        Swal.fire({
+          title: "Eliminado",
+          text: `El servicio fue eliminado correctamente`,
+          icon: "success",
+          background: "#18181b",
+          color: "#f4f4f5",
+          confirmButtonColor: "#3b82f6",
+        });
+      }
+    });
+  };
 
   return (
     <tr className="border-b border-zinc-800 hover:bg-zinc-900/50 transition-colors">
@@ -18,21 +48,18 @@ const ItemTabla = ({servicio, fila}: ItemTablaProps) => {
         {servicio.nombreServicio}
       </td>
       <td className="px-6 py-4 whitespace-nowrap text-sm text-zinc-400 font-mono">
-        ${servicio.precio.toLocaleString('es-AR')}
+        ${servicio.precio.toLocaleString("es-AR")}
       </td>
       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
         <div className="flex gap-3">
-          <Link 
-            className="text-amber-500 hover:text-amber-400 transition-colors flex items-center gap-1" 
+          <Link
+            className="text-amber-500 hover:text-amber-400 transition-colors flex items-center gap-1"
             to={`/administrador/editar/${servicio.id}`}
           >
-            <i className="bi bi-pencil-square"></i> Editar
+            <LuPencil /> Editar
           </Link>
-          <button 
-           
-            className="text-red-500 hover:text-red-400 transition-colors flex items-center gap-1"
-          >
-            <i className="bi bi-trash"></i> Borrar
+          <button className="text-red-500 hover:text-red-400 transition-colors flex items-center gap-1" onClick={eliminarServicio}>
+            <LuTrash2 /> Borrar
           </button>
         </div>
       </td>
