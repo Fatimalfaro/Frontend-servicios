@@ -1,6 +1,8 @@
 import { useParams, useNavigate, Link } from "react-router";
 import { useAppContext } from "../../context/AppContext";
 import { useEffect } from "react";
+import { formatearPrecio } from "../../utils/formateador";
+
 const DetalleServicio = () => {
   const { id } = useParams<{ id: string }>();
   const { buscarServicio } = useAppContext();
@@ -30,8 +32,8 @@ const DetalleServicio = () => {
         className="w-full h-64 object-cover rounded mb-4 border border-zinc-700"
       />
       <p className="text-lg mb-2">
-        <span className="font-semibold">Precio:</span> $
-        {servicio.precio.toLocaleString("es-AR")}
+        <span className="font-semibold">Precio: </span>
+        {formatearPrecio(servicio.precio)}
       </p>
       <p className="text-lg mb-2">
         <span className="font-semibold">Categoría:</span> {servicio.categoria}
