@@ -18,7 +18,7 @@ const Administrador = () => {
 
   const cargarServicios= async()=>{
     const respuestaServicios = await listarServiciosApi();
-    
+
     if(respuestaServicios && respuestaServicios.status === 200){
       const datos = await respuestaServicios.json()
       setServicios(datos)
@@ -69,6 +69,7 @@ const Administrador = () => {
                   key={servicio._id}
                   servicio={servicio}
                   fila={indice + 1}
+                  setServicios={setServicios}
                 />
               ))
             ) : (
