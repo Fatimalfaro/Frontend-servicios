@@ -1,12 +1,30 @@
 //import { Link } from "react-router";
 import { Link } from "react-router";
 import ItemTabla from "../services/ItemTabla";
-import { useAppContext } from "../../context/AppContext";
+//import { useAppContext } from "../../context/AppContext";
 import { LuCirclePlus } from "react-icons/lu";
+import type { Servicio } from "../../interfaces/Servicios";
+import { useEffect, useState } from "react";
+import { listarServiciosApi } from "../../helpers/queries";
 
 const Administrador = () => {
 
-  const { servicios } = useAppContext();
+   const [servicios, setServicios] = useState<Servicio[]>([])
+
+
+  useEffect(()=>{
+    cargarServicios();
+  },[])
+
+  const cargarServicios= async()=>{
+    const respuestaServicios = await listarServiciosApi();
+    console.log(respuestaServicios)
+    if(respuestaServicios && respuestaServicios.status === 200){
+      const datos = await respuestaServicios.json()
+      console.log(datos)
+      setServicios(datos)
+    }
+  }
 
   return (
     <section className="animate-fadeIn space-y-6">

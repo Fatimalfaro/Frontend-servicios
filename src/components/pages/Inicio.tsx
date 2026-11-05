@@ -1,8 +1,27 @@
 import CardServicio from "../services/CardServicio";
-import { useAppContext } from "../../context/AppContext";
+//import { useAppContext } from "../../context/AppContext";
+import type { Servicio } from '../../interfaces/Servicios';
+import { useEffect, useState } from "react";
+import { listarServiciosApi } from "../../helpers/queries";
 
 const Inicio = () => {
-  const { servicios } = useAppContext();
+  
+  const [servicios, setServicios] = useState<Servicio[]>([])
+
+  useEffect(()=>{
+    cargarServicios();
+  },[])
+
+  const cargarServicios= async()=>{
+    const respuestaServicios = await listarServiciosApi();
+    console.log(respuestaServicios)
+    if(respuestaServicios && respuestaServicios.status === 200){
+      const datos = await respuestaServicios.json()
+      console.log(datos)
+      setServicios(datos)
+    }
+  }
+
   return (
     <section className="space-y-8 animate-fadeIn">
       {/* Encabezado con estilo moderno */}
