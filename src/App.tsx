@@ -48,6 +48,24 @@ function App() {
     setServicios(serviciosFiltrados);
   };
 
+  const editarServicio = (
+    idServicio: string,
+    servicioEditar: ServicioFormData,
+  ) => {
+    const serviciosEditados = servicios.map((itemServicio) => {
+      if (itemServicio.id === idServicio) {
+        return { ...itemServicio, ...servicioEditar };
+      }
+      return itemServicio;
+    });
+    setServicios(serviciosEditados);
+  };
+
+  const buscarServicio = (idServicio: string): Servicio | undefined => {
+    return servicios.find((item) => item.id === idServicio);
+  };
+
+
   return (
     <AppContext.Provider
       value={{
@@ -55,7 +73,9 @@ function App() {
         setUsuarioLogueado,
         servicios,
         crearServicio,
-        borrarServicio
+        borrarServicio,
+        editarServicio,
+        buscarServicio
       }}
     >
       <BrowserRouter>
