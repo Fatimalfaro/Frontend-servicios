@@ -48,6 +48,8 @@ function App() {
       value={{
         usuarioLogueado,
         setUsuarioLogueado,
+        servicios,
+        crearServicio
       }}
     >
       <BrowserRouter>
