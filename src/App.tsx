@@ -10,13 +10,17 @@ import FormularioServicio from "./components/pages/FormularioServicio";
 import ProtectorRutas from "./components/routes/ProtectorRutas";
 import { useEffect, useState } from "react";
 import { AppContext } from "./context/AppContext";
-
+import type { Servicio } from "./interfaces/Servicios";
 
 function App() {
   const usuarioSessionStorage = JSON.parse(
     sessionStorage.getItem("usuarioKey") || "false",
   );
   const [usuarioLogueado, setUsuarioLogueado] = useState<boolean>(usuarioSessionStorage);
+
+  // agregamos los servicios
+    const serviciosLocalStorage = JSON.parse(localStorage.getItem('serviciosKey') || "[]");
+  const [servicios, setServicios] = useState<Servicio[]>(serviciosLocalStorage);
 
    useEffect(() => {
     sessionStorage.setItem("usuarioKey", JSON.stringify(usuarioLogueado));
