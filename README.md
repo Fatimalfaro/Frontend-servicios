@@ -1,78 +1,79 @@
-# React + TypeScript + Vite
+# 💻 CRUD de Servicios de programación
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Este proyecto es una aplicación web desarrollada con React y TypeScript que permite realizar operaciones CRUD (Crear, Leer, Actualizar, Eliminar) sobre un listado de servicios. Es ideal para aprender y practicar conceptos de desarrollo frontend moderno.
 
-Currently, two official plugins are available:
+## 🦖 Demo
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+mira la demo del proyecto [aqui](...)
 
-## React Compiler
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+## 🚀 Librerías utilizadas
 
-Note: This will impact Vite dev & build performances.
-You can also try [the experimental native React Compiler support in plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md#rust-react-compiler) by using `compiler: true` in the plugin options instead of using the Babel plugin.
+- React
+- TypeScript
+- Vite
+- React Router
+- Tailwind
+- react-icons
+- sweetalert 2
 
-## Expanding the ESLint configuration
+## 📦 Pasos para usar el proyecto
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+1. **Clonar el repositorio:**
+   ```bash
+   git clone ....
+   ```
+2. **Instalar dependencias:**
+   ```bash
+   pnpm install
+   ```
+3. **Crear la variable de entorno:**
+   - Crea un archivo llamado `.env` en la raíz del proyecto.
+   - Agrega las siguientes líneas (ajusta el valor según corresponda):
+     ```bash
+     VITE_EMAIL=email-admin
+     VITE_PASSWORD=password-admin
+     ```
+4. **Iniciar el proyecto:**
+   ```bash
+   pnpm run dev
+   ```
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## 📂 Estructura de carpetas
 
 ```
-
-You can also install [eslint-plugin-react-x](https://npmx.dev/package/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://npmx.dev/package/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+├── public/
+├── src/
+│   ├── App.tsx
+│   ├── index.css
+│   ├── main.tsx
+│   ├── assets/
+│   ├── components/
+│   │   ├── pages/
+│   │   │   ├── Administrador.tsx
+│   │   │   ├── DetalleServicio.tsx
+│   │   │   ├── Error404.tsx
+│   │   │   ├── FormularioServicio.tsx
+│   │   │   ├── Inicio.tsx
+│   │   │   └── Login.tsx
+│   │   ├── routes/
+│   │   │   └── ProtectorRutas.tsx
+│   │   ├── services/
+│   │   │   ├── CardServicio.tsx
+│   │   │   └── ItemTabla.tsx
+│   │   └── shared/
+│   │       ├── Footer.tsx
+│   │       └── Menu.tsx
+│   ├── context/
+│   │   └── AppContext.tsx
+│   └── interfaces/
+│       └── servicios.ts
+├── package.json
+├── tsconfig.json
+├── vite.config.ts
+└── README.md
 ```
+
+## 👩🏻‍💻 Autor
+
+Hecho por [Fátima Alfaro]
