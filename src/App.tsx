@@ -38,13 +38,13 @@ function App() {
   const crearServicio = (dataServicio: ServicioFormData) => {
     const servicioNuevo: Servicio = {
       ...dataServicio,
-      id: crypto.randomUUID(),
+      _id: crypto.randomUUID(),
     };
     setServicios([...servicios, servicioNuevo]);
   };
 
   const borrarServicio = (idServicio: string) => {
-    const serviciosFiltrados = servicios.filter((itemServicio) => itemServicio.id !== idServicio);
+    const serviciosFiltrados = servicios.filter((itemServicio) => itemServicio._id !== idServicio);
     setServicios(serviciosFiltrados);
   };
 
@@ -53,7 +53,7 @@ function App() {
     servicioEditar: ServicioFormData,
   ) => {
     const serviciosEditados = servicios.map((itemServicio) => {
-      if (itemServicio.id === idServicio) {
+      if (itemServicio._id === idServicio) {
         return { ...itemServicio, ...servicioEditar };
       }
       return itemServicio;
@@ -62,7 +62,7 @@ function App() {
   };
 
   const buscarServicio = (idServicio: string): Servicio | undefined => {
-    return servicios.find((item) => item.id === idServicio);
+    return servicios.find((item) => item._id === idServicio);
   };
 
 

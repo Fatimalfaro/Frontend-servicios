@@ -49,7 +49,7 @@ const Administrador = () => {
            {servicios.length > 0 ? (
               servicios.map((servicio, indice) => (
                 <ItemTabla
-                  key={servicio.id}
+                  key={servicio._id}
                   servicio={servicio}
                   fila={indice + 1}
                 />
