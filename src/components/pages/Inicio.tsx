@@ -1,5 +1,4 @@
 import CardServicio from "../services/CardServicio";
-//import { useAppContext } from "../../context/AppContext";
 import type { Servicio } from '../../interfaces/Servicios';
 import { useEffect, useState } from "react";
 import { listarServiciosApi } from "../../helpers/queries";
@@ -14,10 +13,9 @@ const Inicio = () => {
 
   const cargarServicios= async()=>{
     const respuestaServicios = await listarServiciosApi();
-    console.log(respuestaServicios)
+    
     if(respuestaServicios && respuestaServicios.status === 200){
       const datos = await respuestaServicios.json()
-      console.log(datos)
       setServicios(datos)
     }
   }
