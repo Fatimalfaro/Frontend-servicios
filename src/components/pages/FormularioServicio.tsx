@@ -1,5 +1,5 @@
 import { useForm, type SubmitHandler } from "react-hook-form";
-import type { Categoria, ServicioFormData } from "../../interfaces/servicios";
+import type { Categoria, ServicioFormData } from "../../interfaces/Servicios";
 // import { useAppContext } from "../../context/AppContext";
 import Swal from "sweetalert2";
 import { useNavigate, useParams } from "react-router";
