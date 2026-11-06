@@ -31,7 +31,7 @@ const Login = () => {
         color: "#f4f4f5",
         confirmButtonColor: "#3b82f6",
       });
-      if (usuario?.rol === "admin") {
+      if (usuario?.rol === "Admin") {
         navegacion("/administrador");
       } else {
         navegacion("/");

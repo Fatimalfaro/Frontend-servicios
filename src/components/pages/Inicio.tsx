@@ -36,7 +36,7 @@ const Inicio = () => {
         // Con || (OR lógico)
         // Con ?? (Fusión nula, Nullish Coalescing Operator)
         setServicios(datos.servicios ?? []); // ?? retorna B unicamente si es A es null
-        setCantidadServicios(datos.cantidadServicios ?? 0);
+        setCantidadServicios(datos.cantidadTotal ?? 0);
         setTotalPaginas(datos.totalPaginas ?? 1);
 
         if (
