@@ -1,8 +1,12 @@
 import { createContext, useContext } from "react";
+import type { Usuario } from "../interfaces/usuarios";
 
 export interface AppContextType {
-  usuarioLogueado: boolean;
+  usuarioLogueado: Usuario | null;
+  loadingSession: boolean;
   setUsuarioLogueado: React.Dispatch<React.SetStateAction<boolean>>;
+  loginBackend: (email: string, pass: string) => Promise<Usuario | null>;
+  logoutBackend: () => Promise<void>;
 }
 
 export const AppContext = createContext<AppContextType | undefined>(undefined);
