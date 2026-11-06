@@ -1,5 +1,5 @@
 import { createContext, useContext } from "react";
-import type { Usuario } from "../interfaces/usuarios";
+import type { Usuario } from "../interfaces/Usuarios";
 
 export interface AppContextType {
   usuarioLogueado: Usuario | null;

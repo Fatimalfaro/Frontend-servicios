@@ -1,6 +1,8 @@
 import Administrador from "./components/pages/Administrador";
 import Inicio from "./components/pages/Inicio";
 import DetalleServicio from "./components/pages/DetalleServicio";
+import Carrito from "./components/pages/Carrito";
+import CheckoutResultado from "./components/pages/CheckoutResultado";
 import Footer from "./components/shared/Footer";
 import Menu from "./components/shared/Menu";
 import Error404 from "./components/pages/Error404";
@@ -10,7 +12,7 @@ import FormularioServicio from "./components/pages/FormularioServicio";
 import ProtectorRutas from "./components/routes/ProtectorRutas";
 import { useEffect, useState } from "react";
 import { AppContext } from "./context/AppContext";
-import type { Usuario } from "./interfaces/usuarios";
+import type { Usuario } from "./interfaces/Usuarios";
 import { loginBackendApi, logoutBackendApi, obtenerPerfilApi, obtenerCantidadCarritoApi } from "./helpers/queries";
 
 function App() {
@@ -136,6 +138,8 @@ function App() {
                 path="/detalle-servicio/:id"
                 element={<DetalleServicio></DetalleServicio>}
               ></Route>
+              <Route path="/carrito" element={<Carrito />} />
+              <Route path="/checkout/resultado" element={<CheckoutResultado />} />
               <Route path="/administrador" element={<ProtectorRutas />}>
                 <Route index element={<Administrador />} />
                 <Route

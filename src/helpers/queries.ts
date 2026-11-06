@@ -1,5 +1,5 @@
 import type { Servicio, ServicioFormData } from "../interfaces/Servicios";
-import type { Usuario } from "../interfaces/usuarios";
+import type { Usuario } from "../interfaces/Usuarios";
 
 const urlServicios = import.meta.env.VITE_SERVICIO+"/servicios";
 const urlCategorias = import.meta.env.VITE_SERVICIO + "/categorias";
@@ -165,6 +165,38 @@ export const obtenerCantidadCarritoApi = async (): Promise<number> => {
     const data = await respuesta.json();
     if (!data || !Array.isArray(data.items)) return 0;
     return data.items.reduce((acc: number, it: any) => acc + (Number(it.cantidad) || 0), 0);
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
+
+export const obtenerCarritoApi = async (): Promise<any> => {
+  try {
+    const respuesta = await fetch('http://localhost:3000/api/carrito', {
+      method: 'GET',
+      credentials: 'include',
+    });
+    if (respuesta.status === 401 || respuesta.status === 403) {
+      return null;
+    }
+    if (!respuesta.ok) {
+      throw new Error('No se pudo obtener el carrito');
+    }
+    return respuesta.json();
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
+
+export const crearPreferenciaPagoApi = async (): Promise<Response> => {
+  try {
+    const respuesta = await fetch('http://localhost:3000/api/pago/crear-preferencia', {
+      method: 'POST',
+      credentials: 'include',
+    });
+    return respuesta;
   } catch (error) {
     console.error(error);
     throw error;
