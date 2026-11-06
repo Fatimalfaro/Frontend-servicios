@@ -13,8 +13,11 @@ const { usuarioLogueado, loadingSession } = useAppContext();
     );
   }
   // 2. Una vez que terminó de verificar: si no hay usuario o no es admin, redirige
-  if (!usuarioLogueado || usuarioLogueado.rol ==='cliente') {
+  if (!usuarioLogueado) {
     return <Navigate to="/login" replace />;
+  }
+  if (usuarioLogueado.rol === "cliente") {
+    return <Navigate to="/" replace />;
   }
   // 3. Si es admin y está autenticado, renderiza la ruta anidada
   return <Outlet />;
