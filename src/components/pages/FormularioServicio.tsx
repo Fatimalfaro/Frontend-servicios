@@ -1,5 +1,5 @@
 import { useForm, type SubmitHandler } from "react-hook-form";
-import type { Categoria, ServicioFormData } from "../../interfaces/Servicios";
+import type { Categoria, ServicioFormData } from "../../interfaces/servicios";
 // import { useAppContext } from "../../context/AppContext";
 import Swal from "sweetalert2";
 import { useNavigate, useParams } from "react-router";
@@ -21,6 +21,7 @@ const FormularioServicio = ({ titulo }: FormularioServicioProps) => {
     handleSubmit,
     formState: { errors },
     setValue,
+    resetField, //agregar el reset del input tipo field
   } = useForm<ServicioFormData>();
   // traigo los datos que necesito del contexto
   // const { crearServicio, buscarServicio, editarServicio } = useAppContext();
@@ -28,9 +29,22 @@ const FormularioServicio = ({ titulo }: FormularioServicioProps) => {
   const { id } = useParams<{ id: string }>();
   const navegacion = useNavigate();
   const [categorias, setCategorias] = useState<Categoria[]>([]);
+  // agrego estos dos states para trabajar las imagenes
+  const [imagenActual, setImagenActual] = useState("");
+  const [preview, setPreview] = useState("");
+
+  const registroImagen = register("imagen", {
+    required: titulo.includes("Crear") ? "La imagen es obligatoria" : false,
+    validate: {
+      fileSize: (files: FileList) =>
+        !files[0] ||
+        files[0].size <= 2 * 1024 * 1024 ||
+        "La imagen no debe superar los 2MB.",
+    },
+  });
 
   useEffect(() => {
-    cargarCategorias();
+    cargarCategorias(); //nuevo cargo las categorias
     cargarDatos();
   }, []);
 
@@ -49,21 +63,21 @@ const FormularioServicio = ({ titulo }: FormularioServicioProps) => {
   const cargarDatos = async () => {
     if (titulo.includes("Editar") && id && buscarServicioApi) {
       const respuestaServicio = await buscarServicioApi(id);
-
       if (respuestaServicio && respuestaServicio.status === 200) {
         const servicioBuscado = await respuestaServicio.json();
         setValue("nombreServicio", servicioBuscado.nombreServicio);
         setValue("precio", servicioBuscado.precio);
-        const categoriaId = servicioBuscado.categoria?._id ?? servicioBuscado.categoria;
+        const categoriaId =
+          servicioBuscado.categoria?._id ?? servicioBuscado.categoria; //cargo el id de la categoria en el select del formulario
         setValue("categoria", categoriaId);
         setValue("descripcion", servicioBuscado.descripcion);
-        setValue("imagen", servicioBuscado.imagen);
+        setImagenActual(servicioBuscado.imagen);
       }
     }
   };
 
-  const onSubmit: SubmitHandler<ServicioFormData> = (data , e) => {
-    console.log(data);
+  const onSubmit: SubmitHandler<ServicioFormData> = async (data, e) => {
+
     if (titulo.includes("Crear") && crearServicioApi) {
       crearServicioApi(data);
       Swal.fire({
@@ -76,18 +90,33 @@ const FormularioServicio = ({ titulo }: FormularioServicioProps) => {
       });
       if (e) {
         (e.target as HTMLFormElement).reset();
+        resetField("imagen");
+        setPreview("");
+        setImagenActual("");
       }
     } else if (id) {
-      editarServicioApi(id, data);
+      const respuesta = await editarServicioApi(id, data);
+      if (respuesta.ok) {
+        Swal.fire({
+          title: "Servicio editado",
+          text: `El servicio '${data.nombreServicio}' fue editado correctamente`,
+          icon: "success",
+          background: "#18181b",
+          color: "#f4f4f5",
+          confirmButtonColor: "#3b82f6",
+        });
+        navegacion("/administrador");
+      }
+    } else {
       Swal.fire({
-        title: "Servicio editado",
-        text: `El servicio '${data.nombreServicio}' fue editado correctamente`,
-        icon: "success",
+        title: "Ocurrio un error",
+        text: `El servicio '${data.nombreServicio}' no pudo ser editado.`,
+        icon: "error",
         background: "#18181b",
         color: "#f4f4f5",
         confirmButtonColor: "#3b82f6",
       });
-      navegacion("/administrador");
+
     }
   };
 
@@ -179,21 +208,42 @@ const FormularioServicio = ({ titulo }: FormularioServicioProps) => {
             {/* URL Imagen */}
             <div className="md:col-span-2">
               <label className="block text-sm font-medium text-zinc-300 mb-2">
-                URL de Imagen*
+                Imagen{titulo.includes("Crear") ? "*" : ""}
               </label>
               <input
-                type="text"
-                placeholder="https://ejemplo.com/imagen.jpg"
+                type="file"
+                accept="image/*"
                 className={inputClass(!!errors.imagen)}
-                {...register("imagen", {
-                  required: "La URL es obligatoria",
-                  pattern: {
-                    value: /\.(jpg|jpeg|png|webp|avif|svg)$/,
-                    message:
-                      "Debe ser una URL de imagen válida (jpg, png, webp, etc.)",
-                  },
-                })}
+                {...registroImagen}
+                onChange={(e) => {
+                  registroImagen.onChange(e);
+                  const files = e.target.files;
+                  const file = files ? files[0] : undefined;
+                  setPreview(file ? URL.createObjectURL(file) : "");
+                }}
+
               />
+              {(preview || imagenActual) && (
+                <div className="relative mt-3 inline-block">
+                  <img
+                    className="h-24 w-24 rounded-lg object-cover"
+                    src={preview || imagenActual}
+                    alt="Vista previa de la imagen"
+                  />
+                  <button
+                    type="button"
+                    aria-label="Quitar imagen"
+                    className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-red-600 text-sm text-white hover:bg-red-500"
+                    onClick={() => {
+                      setPreview("");
+                      setImagenActual("");
+                      resetField("imagen");
+                    }}
+                  >
+                    ×
+                  </button>
+                </div>
+              )}
               <p className="text-red-500 text-xs mt-1 italic">
                 {errors.imagen?.message}
               </p>

@@ -1,4 +1,4 @@
-import type { Servicio, ServicioFormData } from "../interfaces/Servicios";
+import type { ServicioFormData } from "../interfaces/Servicios";
 import type { Usuario } from "../interfaces/Usuarios";
 
 const urlServicios = import.meta.env.VITE_SERVICIO+"/servicios";
@@ -6,6 +6,30 @@ const urlCategorias = import.meta.env.VITE_SERVICIO + "/categorias";
 const urlUsuarios = import.meta.env.VITE_SERVICIO+"/usuarios";
 const urlCarrito = import.meta.env.VITE_SERVICIO + "/carrito";
 const urlPago = import.meta.env.VITE_SERVICIO + "/pago"
+
+const prepararFormDataServicio = (
+  servicio: Partial<ServicioFormData>,
+): FormData => {
+  const formData = new FormData();
+
+  if (servicio.nombreServicio !== undefined) {
+    formData.append("nombreServicio", servicio.nombreServicio);
+  }
+  if (servicio.precio !== undefined) {
+    formData.append("precio", String(servicio.precio));
+  }
+  if (servicio.categoria !== undefined) {
+    formData.append("categoria", String(servicio.categoria));
+  }
+  if (servicio.descripcion !== undefined) {
+    formData.append("descripcion", servicio.descripcion);
+  }
+  if (servicio.imagen?.[0]) {
+    formData.append("imagen", servicio.imagen[0]);
+  }
+
+  return formData;
+};
 
 export interface ListarServiciosParams {
   // support both legacy frontend names and backend names
@@ -49,12 +73,11 @@ export const listarCategoriasApi = async (): Promise<Response> => {
 export const crearServicioApi = async (servicio: ServicioFormData,
 ): Promise<Response> => {
   try {
+    const formData = prepararFormDataServicio(servicio);
     const respuesta = await fetch(urlServicios,{
-        method: 'POST',
-        headers:{
-            'Content-Type':'application/json'
-        },
-        body: JSON.stringify(servicio)
+      method: "POST",
+      body: formData,
+      credentials: "include",
     });
     return respuesta
   } catch (error) {
@@ -65,15 +88,14 @@ export const crearServicioApi = async (servicio: ServicioFormData,
 
 export const editarServicioApi = async (
   id: string | number,
-  servicio: Partial<Servicio>,
+  servicio: Partial<ServicioFormData>,
 ): Promise<Response> => {
   try {
+    const formData = prepararFormDataServicio(servicio);
     const respuesta = await fetch(`${urlServicios}/${id}`,{
         method: 'PUT',
-        headers:{
-            'Content-Type':'application/json'
-        },
-        body: JSON.stringify(servicio)
+        body: formData,
+        credentials: "include",
     });
     return respuesta
   } catch (error) {
@@ -97,7 +119,8 @@ export const borrarServicioApi = async ( id: string | number,
 ): Promise<Response> => {
   try {
     const respuesta = await fetch(`${urlServicios}/${id}`,{
-        method: 'DELETE'
+        method: "DELETE",
+        credentials: "include",
     });
     return respuesta
   } catch (error) {
@@ -138,11 +161,11 @@ export const obtenerPerfilApi = async (): Promise<Usuario> => {
 
 export const agregarAlCarritoApi = async (servicioId: string, cantidad = 1): Promise<Response> => {
   try {
-    console.log(urlCarrito)
+    console.log(urlCarrito);
     const respuesta = await fetch(urlCarrito, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
       body: JSON.stringify({ servicio: servicioId, cantidad }),
     });
     return respuesta;
@@ -154,16 +177,16 @@ export const agregarAlCarritoApi = async (servicioId: string, cantidad = 1): Pro
 
 export const restarDelCarritoApi = async (servicioId: string): Promise<Response> => {
   const respuesta = await fetch(`${urlCarrito}/restar/${servicioId}`, {
-    method: 'PATCH',
-    credentials: 'include',
+    method: "PATCH",
+    credentials: "include",
   });
   return respuesta;
 };
 
 export const eliminarServicioDelCarritoApi = async (servicioId: string): Promise<Response> => {
   const respuesta = await fetch(`${urlCarrito}/servicio/${servicioId}`, {
-    method: 'DELETE',
-    credentials: 'include',
+    method: "DELETE",
+    credentials: "include",
   });
   return respuesta;
 };
@@ -172,15 +195,15 @@ export const eliminarServicioDelCarritoApi = async (servicioId: string): Promise
 export const obtenerCantidadCarritoApi = async (): Promise<number> => {
   try {
     const respuesta = await fetch(urlCarrito, {
-      method: 'GET',
-      credentials: 'include',
+      method: "GET",
+      credentials: "include",
     });
     if (respuesta.status === 401 || respuesta.status === 403) {
       // usuario no autenticado: no hay carrito accesible
       return 0;
     }
     if (!respuesta.ok) {
-      throw new Error('No se pudo obtener el carrito');
+      throw new Error("No se pudo obtener el carrito");
     }
     const data = await respuesta.json();
     if (!data || !Array.isArray(data.items)) return 0;
@@ -194,14 +217,14 @@ export const obtenerCantidadCarritoApi = async (): Promise<number> => {
 export const obtenerCarritoApi = async (): Promise<any> => {
   try {
     const respuesta = await fetch(urlCarrito, {
-      method: 'GET',
-      credentials: 'include',
+      method: "GET",
+      credentials: "include",
     });
     if (respuesta.status === 401 || respuesta.status === 403) {
       return null;
     }
     if (!respuesta.ok) {
-      throw new Error('No se pudo obtener el carrito');
+      throw new Error("No se pudo obtener el carrito");
     }
     return respuesta.json();
   } catch (error) {
@@ -213,8 +236,8 @@ export const obtenerCarritoApi = async (): Promise<any> => {
 export const crearPreferenciaPagoApi = async (): Promise<Response> => {
   try {
     const respuesta = await fetch(`${urlPago}/crear-preferencia`, {
-      method: 'POST',
-      credentials: 'include',
+      method: "POST",
+      credentials: "include",
     });
     return respuesta;
   } catch (error) {
