@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router";
 import type { Servicio } from "../../interfaces/Servicios";
-import { formatearPrecio } from "../../utils/formateador";
 import { useAppContext } from "../../context/AppContext";
 import { agregarAlCarritoApi } from "../../helpers/queries";
 import { LuShoppingCart } from "react-icons/lu";
