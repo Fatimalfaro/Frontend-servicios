@@ -1,7 +1,8 @@
-import type { Servicio } from "../interfaces/Servicios";
+import type { Servicio, ServicioFormData } from "../interfaces/Servicios";
 import type { Usuario } from "../interfaces/usuarios";
 
 const urlServicios = import.meta.env.VITE_SERVICIO+"/servicios";
+const urlCategorias = import.meta.env.VITE_SERVICIO + "/categorias";
 const urlUsuarios = import.meta.env.VITE_SERVICIO+"/usuarios";
 
 export interface ListarServiciosParams {
@@ -33,7 +34,18 @@ export const listarServiciosApi = async (params: ListarServiciosParams = {},): P
   }
 };
 
-export const crearServicioApi = async (servicio:Servicio):Promise<Response> => {
+export const listarCategoriasApi = async (): Promise<Response> => {
+  try {
+    const respuesta = await fetch(urlCategorias);
+    return respuesta;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
+
+export const crearServicioApi = async (servicio: ServicioFormData,
+): Promise<Response> => {
   try {
     const respuesta = await fetch(urlServicios,{
         method: 'POST',

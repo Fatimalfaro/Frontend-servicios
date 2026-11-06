@@ -1,100 +1,97 @@
 import { useForm, type SubmitHandler } from "react-hook-form";
+import type { Categoria, ServicioFormData } from "../../interfaces/Servicios";
+// import { useAppContext } from "../../context/AppContext";
 import Swal from "sweetalert2";
-import type { ServicioFormData } from "../../interfaces/Servicios";
 import { useNavigate, useParams } from "react-router";
-import { useEffect } from "react";
-import { crearServicioApi, buscarServicioApi, editarServicioApi} from "../../helpers/queries";
+import { useEffect, useState } from "react";
+import {
+  buscarServicioApi,
+  crearServicioApi,
+  editarServicioApi,
+  listarCategoriasApi,
+} from "../../helpers/queries";
 
-interface FormularioProps {
+interface FormularioServicioProps {
   titulo: string;
 }
 
-const FormularioServicio = ({ titulo }: FormularioProps) => {
+const FormularioServicio = ({ titulo }: FormularioServicioProps) => {
   const {
     register,
     handleSubmit,
     formState: { errors },
     setValue,
   } = useForm<ServicioFormData>();
-  
+  // traigo los datos que necesito del contexto
+  // const { crearServicio, buscarServicio, editarServicio } = useAppContext();
+  // traer el id de la ruta
   const { id } = useParams<{ id: string }>();
   const navegacion = useNavigate();
+  const [categorias, setCategorias] = useState<Categoria[]>([]);
 
   useEffect(() => {
-    obtenerServicio();
+    cargarCategorias();
+    cargarDatos();
   }, []);
 
-  const obtenerServicio = async () => {
+  const cargarCategorias = async () => {
+    try {
+      const respuestaCategorias = await listarCategoriasApi();
+      if (respuestaCategorias.ok) {
+        const listaCategorias = await respuestaCategorias.json();
+        setCategorias(listaCategorias);
+      }
+    } catch (error) {
+      console.error("Error cargando categorías:", error);
+    }
+  };
+
+  const cargarDatos = async () => {
     if (titulo.includes("Editar") && id && buscarServicioApi) {
-      const respuesta = await buscarServicioApi(id);
-      if (respuesta && respuesta.status === 200) {
-        const servicioBuscado = await respuesta.json();
-        if (servicioBuscado) {
-          setValue("nombreServicio", servicioBuscado.nombreServicio);
-          setValue("precio", servicioBuscado.precio);
-          setValue("categoria", servicioBuscado.categoria);
-          setValue("descripcion", servicioBuscado.descripcion);
-          setValue("imagen", servicioBuscado.imagen);
-        }
+      const respuestaServicio = await buscarServicioApi(id);
+
+      if (respuestaServicio && respuestaServicio.status === 200) {
+        const servicioBuscado = await respuestaServicio.json();
+        setValue("nombreServicio", servicioBuscado.nombreServicio);
+        setValue("precio", servicioBuscado.precio);
+        const categoriaId = servicioBuscado.categoria?._id ?? servicioBuscado.categoria;
+        setValue("categoria", categoriaId);
+        setValue("descripcion", servicioBuscado.descripcion);
+        setValue("imagen", servicioBuscado.imagen);
       }
     }
   };
 
-  const onSubmit: SubmitHandler<ServicioFormData> = async (data, e) => {
-    
+  const onSubmit: SubmitHandler<ServicioFormData> = (data , e) => {
+    console.log(data);
     if (titulo.includes("Crear") && crearServicioApi) {
-       //aqui pido efectivamente crear un servicio
-      const respuesta = await crearServicioApi(data);
-      
-      if (respuesta && respuesta.status === 201) {
-        Swal.fire({
-          title: "Servicio creado",
-          text: `El servicio '${data.nombreServicio}' fue creado correctamente`,
-          icon: "success",
-          background: "#18181b",
-          color: "#f4f4f5",
-          confirmButtonColor: "#3b82f6",
-        });
-        //else preguntar si el status code es 400 💥
-        if (e) {
-          (e.target as HTMLFormElement).reset();
-        }
-      } else {
-        Swal.fire({
-          title: "Ocurrio un error",
-          text: `El servicio '${data.nombreServicio}' no pudo ser creado`,
-          icon: "error",
-          background: "#18181b",
-          color: "#f4f4f5",
-          confirmButtonColor: "#3b82f6",
-        });
+      crearServicioApi(data);
+      Swal.fire({
+        title: "Servicio creado",
+        text: `El servicio '${data.nombreServicio}' fue creado correctamente`,
+        icon: "success",
+        background: "#18181b",
+        color: "#f4f4f5",
+        confirmButtonColor: "#3b82f6",
+      });
+      if (e) {
+        (e.target as HTMLFormElement).reset();
       }
     } else if (id) {
-      const respuesta = await editarServicioApi(id, data);
-      if(respuesta && respuesta.status === 200){
-        Swal.fire({
-          title: "Servicio editado",
-          text: `El servicio '${data.nombreServicio}' fue editado correctamente`,
-          icon: "success",
-          background: "#18181b",
-          color: "#f4f4f5",
-          confirmButtonColor: "#3b82f6",
-        });
-        navegacion("/administrador");
-      }else{
-         Swal.fire({
-          title: "Ocurrio un error",
-          text: `El servicio '${data.nombreServicio}' no pudo ser editado`,
-          icon: "error",
-          background: "#18181b",
-          color: "#f4f4f5",
-          confirmButtonColor: "#3b82f6",
-        });
-      }
+      editarServicioApi(id, data);
+      Swal.fire({
+        title: "Servicio editado",
+        text: `El servicio '${data.nombreServicio}' fue editado correctamente`,
+        icon: "success",
+        background: "#18181b",
+        color: "#f4f4f5",
+        confirmButtonColor: "#3b82f6",
+      });
+      navegacion("/administrador");
     }
   };
 
-  // Clase utilitaria para inputs consistentes
+  // Clase utilitaria para inputs
   const inputClass = (hasError: boolean) => `
     w-full px-4 py-2.5 bg-zinc-950 border rounded-lg text-zinc-100 
     focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all
@@ -126,7 +123,7 @@ const FormularioServicio = ({ titulo }: FormularioProps) => {
                 })}
               />
               <p className="text-red-500 text-xs mt-1 italic">
-                {errors.nombreServicio?.message?.toString()}
+                {errors.nombreServicio?.message}
               </p>
             </div>
 
@@ -146,7 +143,7 @@ const FormularioServicio = ({ titulo }: FormularioProps) => {
                 })}
               />
               <p className="text-red-500 text-xs mt-1 italic">
-                {errors.precio?.message?.toString()}
+                {errors.precio?.message}
               </p>
             </div>
 
@@ -164,18 +161,18 @@ const FormularioServicio = ({ titulo }: FormularioProps) => {
                 <option value="" className="bg-zinc-900">
                   Seleccione una opción
                 </option>
-                <option value="Desarrollo Web" className="bg-zinc-900">
-                  Desarrollo Web
-                </option>
-                <option value="Backend & API" className="bg-zinc-900">
-                  Backend & API
-                </option>
-                <option value="Consultoría" className="bg-zinc-900">
-                  Consultoría
-                </option>
+                {categorias.map((categoria) => (
+                  <option
+                    key={categoria._id}
+                    value={categoria._id}
+                    className="bg-zinc-900"
+                  >
+                    {categoria.nombre}
+                  </option>
+                ))}
               </select>
               <p className="text-red-500 text-xs mt-1 italic">
-                {errors.categoria?.message?.toString()}
+                {errors.categoria?.message}
               </p>
             </div>
 
@@ -198,7 +195,7 @@ const FormularioServicio = ({ titulo }: FormularioProps) => {
                 })}
               />
               <p className="text-red-500 text-xs mt-1 italic">
-                {errors.imagen?.message?.toString()}
+                {errors.imagen?.message}
               </p>
             </div>
 
@@ -218,7 +215,7 @@ const FormularioServicio = ({ titulo }: FormularioProps) => {
                 })}
               />
               <p className="text-red-500 text-xs mt-1 italic">
-                {errors.descripcion?.message?.toString()}
+                {errors.descripcion?.message}
               </p>
             </div>
           </div>
