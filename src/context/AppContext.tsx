@@ -3,10 +3,10 @@ import type { Usuario } from "../interfaces/usuarios";
 
 export interface AppContextType {
   usuarioLogueado: Usuario | null;
-  loadingSession: boolean;
+  loadingSession: boolean; //nuevo state
   setUsuarioLogueado: React.Dispatch<React.SetStateAction<boolean>>;
-  loginBackend: (email: string, pass: string) => Promise<Usuario | null>;
-  logoutBackend: () => Promise<void>;
+  loginBackend: (email: string, pass: string) => Promise<Usuario | null>; //funcion de login
+  logoutBackend: () => Promise<void>; //funcion de logout
 }
 
 export const AppContext = createContext<AppContextType | undefined>(undefined);
