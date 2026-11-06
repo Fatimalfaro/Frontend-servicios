@@ -10,25 +10,70 @@ import FormularioServicio from "./components/pages/FormularioServicio";
 import ProtectorRutas from "./components/routes/ProtectorRutas";
 import { useEffect, useState } from "react";
 import { AppContext } from "./context/AppContext";
+import type { Usuario } from "./interfaces/usuarios";
+import { loginBackendApi, logoutBackendApi, obtenerPerfilApi } from "./helpers/queries";
 
 function App() {
-  const usuarioSessionStorage = JSON.parse(
-    sessionStorage.getItem("usuarioKey") || "false",
-  );
-  const [usuarioLogueado, setUsuarioLogueado] = useState<boolean>(
-    usuarioSessionStorage,
-  );
+  const [usuarioLogueado, setUsuarioLogueado] = useState<Usuario | null>(null);
+  const [loadingSession, setLoadingSession] = useState<boolean>(true);
+
+
+  const checkAuth = async () => {
+    try {
+      const perfil = await obtenerPerfilApi();
+      setUsuarioLogueado(perfil);
+    } catch {
+      setUsuarioLogueado(null);
+    } finally {
+      setLoadingSession(false);
+    }
+  };
+
+  const loginBackend = async (email: string, pass: string): Promise<Usuario | null> => {
+    setLoadingSession(true);
+    try {
+      const loginRes = await loginBackendApi(email, pass);
+      const loginData = await loginRes.json();
+
+      if (!loginRes.ok) {
+        throw new Error(loginData?.mensaje || "No se pudo iniciar sesión");
+      }
+      // Consultamos los datos actualizados del perfil
+      const perfil = await obtenerPerfilApi();
+      setUsuarioLogueado(perfil);
+      return perfil;
+    } catch (error) {
+      console.error("Error al iniciar sesión:", error);
+      setUsuarioLogueado(null);
+      throw error;
+    } finally {
+      setLoadingSession(false);
+    }
+  };
+
+  const logoutBackend = async () => {
+    try {
+      await logoutBackendApi();
+    } catch (error) {
+      console.error("Error al cerrar sesión:", error);
+    } finally {
+      setUsuarioLogueado(null);
+    }
+  };
 
   useEffect(() => {
-    sessionStorage.setItem("usuarioKey", JSON.stringify(usuarioLogueado));
-  }, [usuarioLogueado]);
+    checkAuth();
+  }, []);
 
 
   return (
     <AppContext.Provider
       value={{
         usuarioLogueado,
-        setUsuarioLogueado
+        setUsuarioLogueado,
+        loadingSession,
+        loginBackend,
+        logoutBackend
       }}
     >
       <BrowserRouter>
