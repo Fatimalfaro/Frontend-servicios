@@ -1,16 +1,35 @@
 import type { Servicio } from "../interfaces/Servicios";
 import type { Usuario } from "../interfaces/usuarios";
 
-const urlServicios = import.meta.env.VITE_SERVICIO+'/servicios';
+const urlServicios = import.meta.env.VITE_SERVICIO+"/servicios";
 const urlUsuarios = import.meta.env.VITE_SERVICIO+"/usuarios";
 
-export const listarServiciosApi = async ():Promise<Response> => {
-  try {
-    const respuesta = await fetch(urlServicios);
-    return respuesta
+export interface ListarServiciosParams {
+  // support both legacy frontend names and backend names
+  paginaNumero?: number;
+  cantServicios?: number;
+  pagina?: number;
+  limite?: number;
+  termino?: string;
+}
+
+export const listarServiciosApi = async (params: ListarServiciosParams = {},): Promise<Response> => {
+   try {
+    const query = new URLSearchParams();
+    // Backend espera `pagina` y `limite`. el termino es optativo
+    const pagina = params.pagina ?? params.paginaNumero ?? 1;
+    const limite = params.limite ?? params.cantServicios ?? 8;
+    query.set("pagina", String(pagina));
+    query.set("limite", String(limite));
+    if (params.termino) {
+      query.set("termino", params.termino);
+    }
+
+    const respuesta = await fetch(`${urlServicios}?${query.toString()}`);
+    return respuesta;
   } catch (error) {
     console.error(error);
-    throw error
+    throw error; // Es mejor lanzar el error para que el componente que llama a la API sepa que falló
   }
 };
 
@@ -30,7 +49,10 @@ export const crearServicioApi = async (servicio:Servicio):Promise<Response> => {
   }
 };
 
-export const editarServicioApi = async (id: string, servicio:Servicio):Promise<Response> => {
+export const editarServicioApi = async (
+  id: string | number,
+  servicio: Partial<Servicio>,
+): Promise<Response> => {
   try {
     const respuesta = await fetch(`${urlServicios}/${id}`,{
         method: 'PUT',
@@ -46,7 +68,8 @@ export const editarServicioApi = async (id: string, servicio:Servicio):Promise<R
   }
 };
 
-export const buscarServicioApi = async (id: string):Promise<Response> => {
+export const buscarServicioApi = async ( id: string | number,
+): Promise<Response> => {
   try {
     const respuesta = await fetch(`${urlServicios}/${id}`);
     return respuesta
@@ -56,7 +79,8 @@ export const buscarServicioApi = async (id: string):Promise<Response> => {
   }
 };
 
-export const borrarServicioApi = async (id: string):Promise<Response> => {
+export const borrarServicioApi = async ( id: string | number,
+): Promise<Response> => {
   try {
     const respuesta = await fetch(`${urlServicios}/${id}`,{
         method: 'DELETE'
