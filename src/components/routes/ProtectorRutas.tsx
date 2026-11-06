@@ -16,7 +16,7 @@ const { usuarioLogueado, loadingSession } = useAppContext();
   if (!usuarioLogueado) {
     return <Navigate to="/login" replace />;
   }
-  if (usuarioLogueado.rol === "cliente") {
+  if (usuarioLogueado.rol === "Cliente") {
     return <Navigate to="/" replace />;
   }
   // 3. Si es admin y está autenticado, renderiza la ruta anidada
